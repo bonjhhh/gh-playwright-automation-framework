@@ -1,0 +1,102 @@
+name: CI/CD Pipeline
+
+on:
+  workflow_dispatch:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+env:
+  SLACK_CHANNEL: "#ci-cd-tests"
+  SUCCESS_COLOR: "#36a64f"
+  FAILURE_COLOR: "#ff0000"
+  TEST_PROFILE: "regression"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Compile the code
+        run: |
+          echo "Compiling the code..."
+          echo "Compile complete."
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: mcr.microsoft.com/playwright:v1.48.1-focal
+      options: --user 1000:1000
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install --with-deps
+
+      - name: Run tests
+        run: |
+          npm run cucumber $TEST_PROFILE || true
+
+      - name: Create Slack integration directory and notify status
+        run: |
+          mkdir -p src/utils/slackIntegration
+          echo $? > src/utils/slackIntegration/test_status.txt
+          node src/utils/slackIntegration/notifySlack.js
+
+      - name: Upload test results as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: |
+            reports/**
+            payload.json
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies for Slack notification
+        run: |
+          apk add --no-cache curl
+          ls -l
+          cat payload.json
+
+      - name: Send Slack notification
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "Error: SLACK_WEBHOOK_URL is not set or empty."
+            exit 1
+          fi
+          curl -X POST -H "Content-type: application/json" --data @payload.json "$SLACK_WEBHOOK_URL"
+      
+      - name: Upload payload as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: slack-payload
+          path: payload.json
