@@ -68,7 +68,8 @@ jobs:
 
       - name: Install dependencies for Slack notification
         run: |
-          apk add --no-cache curl
+          sudo apt-get update
+          sudo apt-get install -y curl
           ls -l
           cat payload.json
 
