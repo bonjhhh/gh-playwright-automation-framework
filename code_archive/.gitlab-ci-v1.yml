@@ -1,0 +1,62 @@
+stages:
+  - build
+  - test
+  - notify
+
+variables:
+  SLACK_CHANNEL: "#ci-cd-tests"
+  SUCCESS_COLOR: "#36a64f"
+  FAILURE_COLOR: "#ff0000"
+  NPM_SCRIPT: "cucumber regression" # Define your npm script name here
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}"
+  paths:
+    - node_modules/
+    - .npm/
+
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+
+test-job:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.48.1-focal
+  script:
+    - node -v
+    - npm ci
+    - npx playwright install --with-deps
+    - npm run $NPM_SCRIPT || true
+    - mkdir -p src/utils/slackIntegration # Create the directory if it doesn't exist
+    - echo $? > src/utils/slackIntegration/test_status.txt
+    - cat src/utils/slackIntegration/test_status.txt
+    - ls -l # List files in the current directory
+    - npx playwright show-report playwright-report/results.json || true # Ensure report generation even if tests fail
+    - node src/utils/slackIntegration/notifySlack.js # Run your notification script
+  artifacts:
+    paths:
+      - playwright-report/** 
+      - reports/**
+      - src/utils/slackIntegration/test_status.txt
+  allow_failure: true
+
+notify-slack:
+  stage: notify
+  image: node:14-alpine
+  script:
+    - apk add --no-cache curl
+    - ls -l # List files to confirm `test_status.txt` and `results.json` exist
+    - echo "Running Slack notification script"
+    - node src/utils/slackIntegration/notifySlack.js
+    - cat payload.json # For debugging to see the payload
+    - |
+      curl -X POST -H "Content-type: application/json" --data @payload.json "$SLACK_WEBHOOK_URL"
+  dependencies:
+    - test-job
+  when: always
+  artifacts:
+    paths:
+      - src/utils/slackIntegration/test_status.txt
+      - payload.json

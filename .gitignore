@@ -1,0 +1,16 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore test-results directory
+/test-results/
+
+# Ignore Playwright reports
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+.env
+
+# Ignore all files in the reports directory
+reports*
+/results.json

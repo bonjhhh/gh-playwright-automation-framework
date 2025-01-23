@@ -1,0 +1,30 @@
+config:
+  target: "https://petstore.swagger.io/v2"
+  phases:
+    - duration: 5
+      arrivalRate: 1
+  plugins:
+    ensure: {}
+    apdex: {}
+    metrics-by-endpoint: {}
+    slack: 
+      webhookUrl: "{{ $processEnvironment.SLACK_WEBHOOK_URL }}"
+  processor: './process.js'
+  http:
+    debug: true  # Enable HTTP debug logs for troubleshooting
+
+scenarios:
+  - name: "Create a new pet and log details"
+    flow:
+      - post:
+          url: "/pet"
+          headers:
+            Content-Type: "application/json"
+          beforeRequest: "setJSONBody"
+          capture:
+            - json: "$.id"
+              as: "createdPetId"
+          onError:
+            log: "Error encountered during POST request."
+      - log: "Post request completed, createdPetId: {{ createdPetId }}"
+      - function: "logCreatedPet"  # Log the created pet ID to file

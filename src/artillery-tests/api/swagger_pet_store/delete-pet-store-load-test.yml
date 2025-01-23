@@ -1,0 +1,34 @@
+config:
+  target: "https://petstore.swagger.io/v2"
+  
+  plugins:
+    ensure: {}
+    apdex: {}
+    metrics-by-endpoint: {}
+    slack:
+      webhookUrl: "{{ $processEnvironment.SLACK_WEBHOOK_URL }}"
+
+  payload:
+    path: 'created_pets.csv'  # Path to the CSV file containing pet IDs
+    fields:
+      - 'id'  # CSV has a column 'id' for the pet ID
+    loadAll: true
+    name: petIds  # This will reference the data as 'petIds'
+
+  processor: "./process.js"  # Include the external JavaScript file containing the sendTestSummary function
+  http:
+    debug: true  # Enable HTTP debug logs for troubleshooting
+
+scenarios:  
+  - flow:
+      - think: 2  # Add a small delay to simulate realistic user behavior
+      - log: "Loaded pet IDs: {{ petIds }}"  # Log the loaded pet IDs for verification
+      - log: "Loaded petIds.length: {{ petIds.length }}"  # Log the loaded pet IDs for verification      
+      - loop:
+          - delete:
+              url: "/pet/{{ $loopElement.id }}"  # Perform DELETE request with each pet ID
+              headers:
+                api_key: "special-key"              
+          - log: "Deleted pet with ID: {{ $loopElement.id }}"  # Log which pet ID is being deleted                   
+        over: petIds   
+        count: petIds.length         

@@ -1,0 +1,154 @@
+{
+  "config": {
+    "configFile": "C:\\Gitlab\\source\\playwright-automation-framework\\playwright.config.ts",
+    "rootDir": "C:/Gitlab/source/playwright-automation-framework",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "C:\\Gitlab\\source\\playwright-automation-framework\\src\\utils\\global-setup.ts",
+    "globalTeardown": "C:\\Gitlab\\source\\playwright-automation-framework\\src\\utils\\global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report.json"
+        }
+      ],
+      [
+        "C:\\Gitlab\\source\\playwright-automation-framework\\src\\utils\\ZephyrReporter.ts",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 15000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Gitlab/source/playwright-automation-framework/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Gitlab/source/playwright-automation-framework",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "version": "1.48.2",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "src\\playwright-tests\\ui\\LoginPage.spec.ts",
+      "file": "src/playwright-tests/ui/LoginPage.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "WebdriverUniversity - Login Tests",
+          "file": "src/playwright-tests/ui/LoginPage.spec.ts",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Validate login - SCRUM-T3",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 4343,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2024-12-01T08:09:55.093Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb2866c56be0f307e8ef-10b3bdc14665d0465b50",
+              "file": "src/playwright-tests/ui/LoginPage.spec.ts",
+              "line": 13,
+              "column": 9
+            },
+            {
+              "title": "Validate login - SCRUM-T4",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "status": "passed",
+                      "duration": 3606,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2024-12-01T08:09:59.761Z",
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cb2866c56be0f307e8ef-cdabe7f6a319192c4e3c",
+              "file": "src/playwright-tests/ui/LoginPage.spec.ts",
+              "line": 13,
+              "column": 9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2024-12-01T08:09:52.883Z",
+    "duration": 11145.605,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

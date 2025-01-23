@@ -1,0 +1,9 @@
+{
+    "yaml.schemas": {
+        "https://www.artillery.io/schema.json": [
+            "file:///c%3A/Gitlab/source/playwright-automation-framework/src/artillery-tests/ui/artillery_sample/hello-world.yml",
+            "file:///c%3A/Gitlab/source/playwright-automation-framework/src/artillery-tests/api/swagger_pet_store/create-pet-store-load-test.yml",
+            "git:/c%3A/Gitlab/source/playwright-automation-framework/src/artillery-tests/ui/artillery_sample/hello-world.yml?%7B%22path%22%3A%22c%3A%5C%5CGitlab%5C%5Csource%5C%5Cplaywright-automation-framework%5C%5Csrc%5C%5Cartillery-tests%5C%5Cui%5C%5Cartillery_sample%5C%5Chello-world.yml%22%2C%22ref%22%3A%22~%22%7D"
+        ]
+    }
+}

@@ -1,0 +1,65 @@
+stages:
+  - build
+  - test
+  - notify
+
+variables:
+  SLACK_CHANNEL: "#ci-cd-tests"
+  SUCCESS_COLOR: "#36a64f"
+  FAILURE_COLOR: "#ff0000"
+  TEST_PROFILE: "regression"
+
+cache:
+  key: "${CI_COMMIT_REF_SLUG}"
+  paths:
+    - node_modules/
+    - .npm/
+
+build-job:
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+
+test-job:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.48.1-focal
+  script:
+    - node -v
+    - npm ci
+    - npx playwright install --with-deps
+    - npm run cucumber $TEST_PROFILE || true
+    - mkdir -p src/utils/slackIntegration
+    - echo $? > src/utils/slackIntegration/test_status.txt
+    - node src/utils/slackIntegration/notifySlack.js
+    - ls -l
+    - |
+      echo "Base URL: $ZEPHYR_BASE_URL"      
+      echo "ZEPHYR_PROJECT_KEY: $ZEPHYR_PROJECT_KEY"
+      echo "ZEPHYR_API_TOKEN: $ZEPHYR_API_TOKEN      "
+  artifacts:
+    paths:
+      - reports/**
+      - payload.json
+  allow_failure: true
+
+notify-slack:
+  stage: notify
+  image: node:14-alpine
+  script:
+    - apk add --no-cache curl
+    - ls -l
+    - cat payload.json
+    - |
+      if [ -z "$SLACK_WEBHOOK_URL" ]; then
+        echo "Error: SLACK_WEBHOOK_URL is not set or empty."
+        exit 1
+      fi
+    - |
+      curl -X POST -H "Content-type: application/json" --data @payload.json "$SLACK_WEBHOOK_URL"
+  dependencies:
+    - test-job
+  when: always
+  artifacts:
+    paths:
+      - payload.json

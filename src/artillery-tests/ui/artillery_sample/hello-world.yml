@@ -1,0 +1,11 @@
+config:
+  target: https://www.artillery.io/
+  plugins:    
+   slack: 
+    webhookUrl: "https://hooks.slack.com/services/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"
+  engines:
+    playwright: {}
+  processor: './flows.ts'
+scenarios:
+  - engine: playwright
+    testFunction: 'helloFlow'
