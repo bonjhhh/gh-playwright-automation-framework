@@ -66,12 +66,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Download test reports and payload artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test-reports  # Name of the artifact from the `test` job
+          path: ./artifacts   # Path where you want to download the artifact
+
       - name: Install dependencies for Slack notification
         run: |
           sudo apt-get update
           sudo apt-get install -y curl
-          ls -l
-          cat payload.json
+          ls -l ./artifacts  # Verify downloaded files
+          cat ./artifacts/payload.json  # Verify the contents of the payload.json
 
       - name: Send Slack notification
         run: |
@@ -79,7 +85,7 @@ jobs:
             echo "Error: SLACK_WEBHOOK_URL is not set or empty."
             exit 1
           fi
-          curl -X POST -H "Content-type: application/json" --data @payload.json "$SLACK_WEBHOOK_URL"
+          curl -X POST -H "Content-type: application/json" --data @./artifacts/payload.json "$SLACK_WEBHOOK_URL"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}  # Use the secret here
 
@@ -87,4 +93,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: slack-payload
-          path: payload.json
+          path: ./artifacts/payload.json  # Path to the uploaded artifact
