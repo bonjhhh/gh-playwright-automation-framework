@@ -14,6 +14,7 @@ env:
   SUCCESS_COLOR: "#36a64f"
   FAILURE_COLOR: "#ff0000"
   TEST_PROFILE: "regression"
+  HEADLESS: ${{ vars.HEADLESS }}  # Get the value of HEADLESS from a workflow variable
 
 jobs:
   build:
@@ -43,7 +44,10 @@ jobs:
 
       - name: Run tests
         run: |
+          # Pass the HEADLESS environment variable to your tests
           npm run cucumber $TEST_PROFILE || true
+        env:
+          HEADLESS: ${{ vars.HEADLESS }}  # Use the HEADLESS variable defined in the `env` section
 
       - name: Create Slack integration directory and notify status
         run: |
